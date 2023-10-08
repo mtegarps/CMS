@@ -183,3 +183,10 @@ span.flatpickr-weekday,
     display: none !important;
 }
 
+a span{
+    @apply text-white hover:text-primary;
+}
+
+a svg{
+  @apply text-gray hover:text-primary;
+}
