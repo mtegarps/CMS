@@ -5,48 +5,56 @@ import Swal from 'sweetalert2';
 import { BsTrash, BsRocketTakeoff } from 'react-icons/bs';
 import { AiOutlineLineChart, AiOutlineCopy, AiOutlineFileSearch } from 'react-icons/ai';
 import { MdDisabledVisible, MdVisibility } from 'react-icons/md';
+import moment from 'moment';
+import 'moment/locale/id'
 
-const TableCampaignAll = ({ setIsPatch, setShowModal, loading, title }) => {
+const TableCampaignAll = ({ dataSource, title, dataTemplate }) => {
   const columns = [
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      width: 100,
-      render: (text) => {
-        return (
-          <div className="flex justify-center">
-            {text === 'Finish' ? 
-            <span className="bg-success text-white rounded-sm px-2 py-1 text-xs">{text}</span> : 
-            <span className="bg-warning text-white rounded-sm px-2 py-1 text-xs">{text}</span>
-            }
-          </div>
-        )
-      }
+      title: 'No',
+      dataIndex: 'nomor',
+      key: 'nomor',
+      render: (_, record, index) => index + 1,
+      width: 50,
     },
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      width: 200,
     },
     {
-      title: 'List',
-      dataIndex: 'list',
-      key: 'list',
-      width: 200,
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description'
     },
     {
-      title: 'Timestamps',
-      dataIndex: 'timestamps',
-      key: 'timestamps',
-      width: 200,
+      title: 'Email Template ID',
+      dataIndex: 'emailTemplateID',
+      key: 'emailTemplateID'
     },
     {
-      title: 'Stats',
-      dataIndex: 'stats',
-      key: 'stats',
-      width: 200,
+      title: 'Template',
+      dataIndex: 'emailTemplateID',
+      key: 'emailTemplateID',
+      render: (_, record) => {
+        const template = dataTemplate?.find(e => e.emailTemplateID === record.emailTemplateID);
+        if (!template) return '-'
+        return template.name
+      }
+    },
+    {
+      title: 'Email Campaign ID',
+      dataIndex: 'emailCampaignID',
+      key: 'emailCampaignID'
+    },
+    {
+      title: 'Created At',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (_, record) => {
+        if (!record.created_at) return '-'
+        return moment(record.created_at).format('lll')
+      }
     },
     {
       title: '',
@@ -64,32 +72,15 @@ const TableCampaignAll = ({ setIsPatch, setShowModal, loading, title }) => {
       )
     },
   ];
-  const data = [
-    {
-      key: '1',
-      status: 'Finish',
-      name: 'Welcome to listmonk',
-      list: 'Default List',
-      timestamps: '2021-09-01 00:00:00',
-      stats: '0/0/0',
-    },
-    {
-      key: '2',
-      status: 'Draft',
-      name: 'Welcome to listmonk',
-      list: 'Default List',
-      timestamps: '2021-09-01 00:00:00',
-      stats: '0/0/0',
-    },
-  ];
+
   return (
     <>
       <h5 className="text-left">{title}</h5>
       <Table
         columns={columns}
-        dataSource={data}
+        dataSource={dataSource}
         size="small"
-        // scroll={{ x: 1500 }}
+        scroll={{ x: 1500 }}
         // loading={loading}
         pagination={{
           showSizeChanger: true,

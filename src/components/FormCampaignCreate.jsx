@@ -1,23 +1,130 @@
 import React, { useState, useEffect } from 'react'
 import { Form, Input, Button, Checkbox, Select, Switch, DatePicker } from 'antd';
 import TagInput from 'antd-tag-input';
+import Swal from "sweetalert2";
+import { getCookie } from "cookies-next";
+import axios from "axios";
 
-
-const FormCampaignCreate = () => {
+const FormCampaignCreate = ({ dataTemplate, dataBatch }) => {
   const [form] = Form.useForm();
   const [showCustomHeader, setShowCustomHeader] = useState(false)
   const [switchEnable, setSwitchEnable] = useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
-  const onFinish = (values) => {
-    console.log(values);
+  const uploadBatch = async (emailCampaignID) => {
+    console.log('emailCampaignID', emailCampaignID)
+    const values = form.getFieldsValue()
+    const api_url = process.env.NEXT_PUBLIC_API_URL;
+    const token = getCookie("token");
+    const dataBody = {
+      emailCampaignID: emailCampaignID,
+      batchID: values.batchID,
+    }
+
+    await axios.post(`${api_url}/email/emailCampaignBatches/add`, dataBody, {
+      headers: {
+        "x-access-token": token
+      }
+    }).then(res => {
+      console.log(res)
+      const data = res.data.data;
+      if (res.data.statusCode == 200) {
+        console.log('Batch success')
+      }
+      // form.resetFields()
+      setConfirmLoading(false)
+    }).catch(err => {
+      console.log(err)
+      setConfirmLoading(false)
+    })
+  }
+    
+
+  const handleSubmit = async (values) => {
+    setConfirmLoading(true);
+    const api_url = process.env.NEXT_PUBLIC_API_URL;
+    const token = getCookie("token");
+    const dataBody = {
+      emailTemplateID: values.emailTemplateID,
+      name: values.name,
+      description: values.description,
+    }
+
+    await axios.post(`${api_url}/email/emailCampaign/create`, dataBody, {
+      headers: {
+        "x-access-token": token
+      }
+    }).then(res => {
+      console.log(res)
+      const data = res.data.data;
+      if (res.data.statusCode == 200) {
+        //ketika suskses dapat emailCampaignID upload batch
+        uploadBatch(data.emailCampaignID)
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: data.message,
+          showConfirmButton: false,
+          timer: 1500
+        })
+      }
+      form.resetFields()
+      setConfirmLoading(false)
+    }).catch(err => {
+      console.log(err)
+      setConfirmLoading(false)
+    })
+
   };
   return (
     <d>
-      <Form layout="vertical" form={form} name="control-hooks" onFinish={onFinish}>
+      <Form layout="vertical" form={form} name="control-hooks" onFinish={handleSubmit}>
+        <Form.Item
+          label="Template"
+          name="emailTemplateID"
+          rules={[{ required: true, message: 'Please input field Email Template!' }]}
+        >
+          <Select
+            placeholder="select a template"
+            allowClear
+            mode='single'
+            onChange={(e) => {
+              form.setFieldsValue({ emailTemplateID: e })
+            }}
+          >
+            {dataTemplate.map((item, index) => {
+              return (
+                <Select.Option key={index} value={item.emailTemplateID}>{item.name}</Select.Option>
+              )
+            })}
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          label="Batch"
+          name="batchID"
+          rules={[{ required: true, message: 'Please input field Batch!' }]}
+        >
+          <Select
+            placeholder="select a batch"
+            allowClear
+            mode='multiple'
+            onChange={(e) => {
+              form.setFieldsValue({ batchID: e })
+            }}
+          >
+            {dataBatch.map((item, index) => {
+              return (
+                <Select.Option key={index} value={item.batchID}>{item.name}</Select.Option>
+              )
+            })}
+          </Select>
+        </Form.Item>
+
         <Form.Item
           label="Name"
           name="name"
-          rules={[{ required: true, message: 'Please input your campaign name!' }]}
+          rules={[{ required: true, message: 'Please input field name!' }]}
         >
           <Input
             placeholder="name"
@@ -28,6 +135,19 @@ const FormCampaignCreate = () => {
         </Form.Item>
 
         <Form.Item
+          label="Description"
+          name="description"
+          rules={[{ required: true, message: 'Please input field description!' }]}
+        >
+          <Input
+            placeholder="description"
+            onChange={(e) => {
+              form.setFieldsValue({ description: e.target.value })
+            }}
+          />
+        </Form.Item>
+
+        {/* <Form.Item
           label="Subject"
           name="subject"
           rules={[{ required: true, message: 'Please input your campaign subject!' }]}
@@ -180,10 +300,10 @@ const FormCampaignCreate = () => {
               </Form.Item>
             </div>
           )}
-        </Form.Item>
+        </Form.Item> */}
 
         <Button style={{ width: "300px", backgroundColor: "#1E293B", color: "#fff" }} htmlType="submit">
-          Submit
+          {confirmLoading ? "Loading..." : "Create Campaign"}
         </Button>
       </Form>
 

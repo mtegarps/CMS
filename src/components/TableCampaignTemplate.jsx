@@ -4,53 +4,68 @@ import { renderPagination } from './RenderPagination';
 import Swal from 'sweetalert2';
 import { BsTrash, BsRocketTakeoff } from 'react-icons/bs';
 import { AiOutlineLineChart, AiOutlineCopy, AiOutlineFileSearch, AiOutlineEdit, AiOutlineCheckCircle} from 'react-icons/ai';
+import moment from 'moment';
+import 'moment/locale/id'
 
-const TableCampaignTemplate = ({ setIsPatch, setShowModal, loading, title }) => {
+const TableCampaignTemplate = ({ dataSource, emailTypes, title }) => {
   const columns = [
+    {
+      title: 'No',
+      dataIndex: 'nomor',
+      key: 'nomor',
+      render: (_, record, index) => index + 1,
+      width: 50,
+    },
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      width: 200,
     },
     {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      width: 200,
-      render: (text) => {
-        return (
-          <div className="flex justify-start">
-            {text === 'Campaign' ? 
-            <span className="bg-primary text-white rounded-sm px-2 py-1 text-xs">{text}</span> : 
-            <span className="bg-warning text-white rounded-sm px-2 py-1 text-xs">{text}</span>
-            }
-          </div>
-        )
+      render: (_, record) => {
+        const emailType = emailTypes?.find(e => e.emailTypeID === record.emailTypeID);
+        if (emailType?.name == 'Campaign') {
+          return <span className="bg-primary text-white px-2 py-1 rounded-full">{emailType.name}</span>
+        } else if (emailType?.name == 'Transactional') {
+          return <AiOutlineLineChart className="bg-warning text-white px-2 py-1 rounded-full" size={14} />
+        } else {
+          return <>-</>
+        }
       }
     },
     {
       title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-      width: 100,
+      dataIndex: 'emailTemplateID',
+      key: 'emailTemplateID',
     },
     {
       title: 'Created',
-      dataIndex: 'created',
-      key: 'created',
-      width: 200,
+      dataIndex: 'created_at',
+      key: 'created_at',
+      width: 150,
+      render: (_, record) => {
+        if(!record.created_at) return '-'
+        return moment(record.created_at).format('lll')
+      }
     },
     {
       title: 'Updated',
-      dataIndex: 'updated',
-      key: 'updated',
-      width: 200,
+      dataIndex: 'updated_at',
+      key: 'updated_at',
+      width: 150,
+      render: (_, record) => {
+        if(!record.updated_at) return '-'
+        return moment(record.updated_at).format('lll')
+      }
     },
     {
       title: '',
       key: 'action',
       // fixed: 'right',
+      width: 250,
       render: () => (
         <div className="flex justify-between">
           <AiOutlineFileSearch className="text-primary" size={14} />
@@ -62,30 +77,13 @@ const TableCampaignTemplate = ({ setIsPatch, setShowModal, loading, title }) => 
       )
     },
   ];
-  const data = [
-    {
-      key: '1',
-      name: 'Welcome to listmonk',
-      type: 'Campaign',
-      id: '1',
-      created: '2021-09-01 00:00:00',
-      updated: '2021-09-01 00:00:00',
-    },
-    {
-      key: '2',
-      name: 'Welcome to listmonk',
-      type: 'Transactional',
-      id: '2',
-      created: '2021-09-01 00:00:00',
-      updated: '2021-09-01 00:00:00',
-    },
-  ];
+  
   return (
     <>
       <h5 className="text-left">{title}</h5>
       <Table
         columns={columns}
-        dataSource={data}
+        dataSource={dataSource}
         size="small"
         // scroll={{ x: 1500 }}
         // loading={loading}
