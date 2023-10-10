@@ -1,12 +1,14 @@
 import React from "react";
 import Layout from "@/components/Layout";
 import axios from "axios";
-import LogActivity from "@/components/TableActivityLog"; // Import the modified LogActivity component
+import TableActivityLog from "@/components/TableActivityLog"; // Import the modified TableActivityLog component
+import TableActivityLogOld from "@/components/TableActivityLogOld"; // Import the modified TableActivityLog component
 
 const Page = ({ activityData }) => {
   return (
     <Layout>
-      <LogActivity data={activityData} /> 
+      <TableActivityLog data={activityData} /> 
+      {/* <TableActivityLogOld data={activityData} />  */}
     </Layout>
   );
 }

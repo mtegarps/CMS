@@ -6,17 +6,51 @@ import { BsTrash, BsRocketTakeoff } from 'react-icons/bs';
 import { AiOutlineLineChart, AiOutlineCopy, AiOutlineFileSearch } from 'react-icons/ai';
 import { MdDisabledVisible, MdVisibility } from 'react-icons/md';
 import moment from 'moment';
-import 'moment/locale/id'
+import 'moment/locale/id';
+import axios from 'axios';
+import { getCookie } from "cookies-next";
 
 const TableCampaignAll = ({ dataSource, title, dataTemplate }) => {
+
+  const handleStartBlaster = (emailTemplateID, emailCampaignID) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You want to start this campaign?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const api_url = process.env.NEXT_PUBLIC_API_URL;
+        const token = getCookie("token");
+        const dataBody = {
+          emailTemplateID: emailTemplateID,
+          emailCampaignID: emailCampaignID,
+        }
+
+        axios.post(`${api_url}/email/blast/start`, dataBody, {
+          headers: {
+            "x-access-token": token
+          }
+        }).then(res => {
+          const data = res.data.data;
+          if (res.data.statusCode == 200) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: 'Campaign has been started!',
+            })
+          }
+        }).catch(err => {
+          console.log(err)
+        })
+      }
+    })
+  }
+
+
   const columns = [
-    {
-      title: 'No',
-      dataIndex: 'nomor',
-      key: 'nomor',
-      render: (_, record, index) => index + 1,
-      width: 50,
-    },
     {
       title: 'Name',
       dataIndex: 'name',
@@ -59,10 +93,15 @@ const TableCampaignAll = ({ dataSource, title, dataTemplate }) => {
     {
       title: '',
       key: 'action',
-      // fixed: 'right',
-      render: () => (
-        <div className="flex justify-between">
-          <BsRocketTakeoff className="text-primary" size={14} />
+      fixed: 'right',
+      width: 200,
+      render: (_, record) => (
+        <div className="flex flex-row justify-around">
+          <BsRocketTakeoff
+            onClick={() => handleStartBlaster(record.emailTemplateID, record.emailCampaignID)}
+            className="text-primary hover:cursor-pointer"
+            size={14}
+          />
           <MdDisabledVisible className="text-primary" size={14} />
           <AiOutlineFileSearch className="text-primary" size={14} />
           <AiOutlineCopy className="text-primary" size={14} />
@@ -85,8 +124,8 @@ const TableCampaignAll = ({ dataSource, title, dataTemplate }) => {
         pagination={{
           showSizeChanger: true,
           showQuickJumper: true,
-          defaultPageSize: 25,
-          pageSizeOptions: ["25", "50", "100"],
+          defaultPageSize: 10,
+          pageSizeOptions: ["10", "50", "100"],
           position: ["bottomRight"],
           size: "default",
           itemRender: renderPagination,

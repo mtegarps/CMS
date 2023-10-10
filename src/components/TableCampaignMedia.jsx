@@ -61,8 +61,8 @@ const TableCampaignMedia = ({ setIsPatch, setShowModal, loading, title }) => {
         pagination={{
           showSizeChanger: true,
           showQuickJumper: true,
-          defaultPageSize: 25,
-          pageSizeOptions: ["25", "50", "100"],
+          defaultPageSize: 10,
+          pageSizeOptions: ["10", "50", "100"],
           position: ["bottomRight"],
           size: "default",
           itemRender: renderPagination,

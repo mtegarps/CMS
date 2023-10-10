@@ -10,13 +10,6 @@ import 'moment/locale/id'
 const TableCampaignTemplate = ({ dataSource, emailTypes, title }) => {
   const columns = [
     {
-      title: 'No',
-      dataIndex: 'nomor',
-      key: 'nomor',
-      render: (_, record, index) => index + 1,
-      width: 50,
-    },
-    {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
@@ -67,7 +60,7 @@ const TableCampaignTemplate = ({ dataSource, emailTypes, title }) => {
       // fixed: 'right',
       width: 250,
       render: () => (
-        <div className="flex justify-between">
+        <div className="flex flex-row justify-around">
           <AiOutlineFileSearch className="text-primary" size={14} />
           <AiOutlineEdit className="text-primary" size={14} />
           <AiOutlineCopy className="text-primary" size={14} />
@@ -90,8 +83,8 @@ const TableCampaignTemplate = ({ dataSource, emailTypes, title }) => {
         pagination={{
           showSizeChanger: true,
           showQuickJumper: true,
-          defaultPageSize: 25,
-          pageSizeOptions: ["25", "50", "100"],
+          defaultPageSize: 10,
+          pageSizeOptions: ["10", "50", "100"],
           position: ["bottomRight"],
           size: "default",
           itemRender: renderPagination,

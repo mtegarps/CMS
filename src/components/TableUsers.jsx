@@ -1,58 +1,77 @@
-import {FaEdit} from "react-icons/fa";
-import Link from "next/link";
+import React from 'react';
+import { Table } from 'antd';
+import { renderPagination } from './RenderPagination';
+import Swal from 'sweetalert2';
+import { BsTrash, BsRocketTakeoff } from 'react-icons/bs';
+import { AiOutlineLineChart, AiOutlineCopy, AiOutlineFileSearch } from 'react-icons/ai';
+import { MdDisabledVisible, MdVisibility } from 'react-icons/md';
+import moment from 'moment';
+import 'moment/locale/id';
 import SwitcherUser from "@/components/SwitcherUser";
-import Table from "@/components/Table";
+import Link from "next/link";
+import { FaEdit } from "react-icons/fa";
 
-const TableUsers = ({users}) => {
+const TableUsers = ({ dataSource, title, dataTemplate }) => {
+  const columns = [
+    {
+      title: 'Action',
+      key: 'action',
+      fixed: 'right',
+      width: 100,
+      render: (_, record) => (
+        <div className="flex flex-row">
+          <SwitcherUser isActive={record.isActive} userID={record.userID} />
+          <Link
+            href={`/user-management/users/${record.userID}/edit`}
+            className={`p-2 rounded-md text-white bg-warning`}
+          >
+            <FaEdit />
+          </Link>
+        </div>
+      )
+    },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
+    },
+    {
+      title: 'Name',
+      dataIndex: 'firstName',
+      key: 'firstName'
+    },
+    {
+      title: 'Company ID',
+      dataIndex: 'companyID',
+      key: 'companyID'
+    },
+    {
+      title: 'Role ID',
+      dataIndex: 'roleID',
+      key: 'roleID'
+    },
+  ];
 
-    return (
-        <Table>
-            <thead>
-            <tr className="text-center bg-gray-2 dark:bg-meta-4">
-                <th className="px-4 py-4 font-medium text-black dark:text-white xl:pl-11">Aksi</th>
-                <th className="px-4 py-4 font-medium text-black dark:text-white">Email</th>
-                <th className="px-4 py-4 font-medium text-black dark:text-white">Name</th>
-                <th className="px-4 py-4 font-medium text-black dark:text-white">companyID</th>
-                <th className="px-4 py-4 font-medium text-black dark:text-white min-w-fit ">
-                    RoleID
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            {users?.map((user, id) => {
-                return (
-                    <tr key={`dataCompanyId.${id}`}>
-                        <td className="border-b flex items-center space-x-3 border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
-                            <SwitcherUser isActive={user.isActive} userID={user.userID}/>
-                            <Link
-                                href={`/user-management/users/${user.userID}/edit`}
-                                className={`p-2 rounded-md text-white bg-warning`}
-                            >
-                                <FaEdit/>
-                            </Link>
-                        </td>
-
-                        <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
-                            {user.email}
-                        </td>
-
-                        <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
-                            {user.firstName}
-                        </td>
-
-                        <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
-                            {user.companyID}
-                        </td>
-
-                        <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
-                            {user.roleID}
-                        </td>
-                    </tr>
-                );
-            })}
-            </tbody>
-        </Table>
-    );
+  return (
+    <>
+      <h5 className="text-left">{title}</h5>
+      <Table
+        columns={columns}
+        dataSource={dataSource}
+        size="small"
+        // scroll={{ x: 1500 }}
+        // loading={loading}
+        pagination={{
+          showSizeChanger: true,
+          showQuickJumper: true,
+          defaultPageSize: 10,
+          pageSizeOptions: ["10", "50", "100"],
+          position: ["bottomRight"],
+          size: "default",
+          itemRender: renderPagination,
+        }}
+      />
+    </>
+  )
 };
-
 export default TableUsers;
