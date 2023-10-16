@@ -33,7 +33,7 @@ const Page = () => {
       setCookie("name", data.role.name, {
         maxAge: 60 * 60 * 1,
       });
-      router.push("/company");
+      router.push("/dashboard");
     } catch (err) {
       console.log(err);
     }
