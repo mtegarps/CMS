@@ -3,14 +3,13 @@ import { Table } from 'antd';
 import { renderPagination } from './RenderPagination';
 import Swal from 'sweetalert2';
 import { BsTrash, BsRocketTakeoff } from 'react-icons/bs';
-import { AiOutlineLineChart, AiOutlineCopy, AiOutlineFileSearch } from 'react-icons/ai';
-import { MdDisabledVisible, MdVisibility } from 'react-icons/md';
+import {AiOutlineEdit} from 'react-icons/ai';
 import moment from 'moment';
 import 'moment/locale/id';
 import axios from 'axios';
 import { getCookie } from "cookies-next";
 
-const TableCampaignAll = ({ dataSource, title, dataTemplate }) => {
+const TableCampaignAll = ({ dataSource, title, dataTemplate, onEdit }) => {
 
   const handleStartBlaster = (emailTemplateID, emailCampaignID) => {
     Swal.fire({
@@ -94,7 +93,7 @@ const TableCampaignAll = ({ dataSource, title, dataTemplate }) => {
       title: '',
       key: 'action',
       fixed: 'right',
-      width: 200,
+      width: 80,
       render: (_, record) => (
         <div className="flex flex-row justify-around">
           <BsRocketTakeoff
@@ -102,11 +101,10 @@ const TableCampaignAll = ({ dataSource, title, dataTemplate }) => {
             className="text-primary hover:cursor-pointer"
             size={14}
           />
-          <MdDisabledVisible className="text-primary" size={14} />
-          <AiOutlineFileSearch className="text-primary" size={14} />
-          <AiOutlineCopy className="text-primary" size={14} />
-          <AiOutlineLineChart className="text-primary" size={14} />
-          <BsTrash className="text-danger" size={14} />
+          <AiOutlineEdit 
+          onClick={() => onEdit(record)}
+          className="text-primary hover:cursor-pointer" 
+          size={14} />
         </div>
       )
     },
@@ -119,7 +117,7 @@ const TableCampaignAll = ({ dataSource, title, dataTemplate }) => {
         columns={columns}
         dataSource={dataSource}
         size="small"
-        scroll={{ x: 1500 }}
+        // scroll={{ x: 1500 }}
         // loading={loading}
         pagination={{
           showSizeChanger: true,
